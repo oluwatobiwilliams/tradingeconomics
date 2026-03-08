@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Peer Analysis</title>
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f8f9fb;
+            color: #1a1a2e;
+            padding: 32px 40px;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .header p {
+            color: #6b7280;
+            font-size: 14px;
+            margin-bottom: 28px;
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 340px 1fr;
+            grid-template-rows: auto;
+            align-items: start;
+            gap: 24px;
+        }
+
+        .card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+        }
+
+        .card-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 14px;
+        }
+
+        /* Ticker chips */
+        .ticker-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .ticker-chip {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            border: 2px solid transparent;
+        }
+
+        .ticker-chip.active {
+            color: #fff;
+        }
+
+        .ticker-chip:not(.active) {
+            background: #f3f4f6;
+            color: #9ca3af;
+            border-color: #e5e7eb;
+        }
+
+        .ticker-chip:not(.active):hover {
+            border-color: #d1d5db;
+        }
+
+        .ticker-chip .remove {
+            font-size: 14px;
+            line-height: 1;
+            opacity: 0.8;
+        }
+
+        .ticker-chip .remove:hover {
+            opacity: 1;
+        }
+
+        /* Time horizon buttons */
+        .time-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .time-btn {
+            padding: 8px 16px;
+            border: 1.5px solid #e5e7eb;
+            border-radius: 8px;
+            background: #fff;
+            font-size: 13px;
+            font-weight: 500;
+            color: #374151;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+
+        .time-btn:hover {
+            border-color: #111827;
+            color: #111827;
+        }
+
+        .time-btn.active {
+            background: #111827;
+            border-color: #111827;
+            color: #fff;
+        }
+
+        /* Stats cards */
+        .stats-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-top: 20px;
+        }
+
+        .stat-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+            min-height: 110px;
+        }
+
+        .stat-card .label {
+            font-size: 12px;
+            color: #6b7280;
+            font-weight: 500;
+            margin-bottom: 6px;
+        }
+
+        .stat-card .ticker {
+            font-size: 24px;
+            font-weight: 700;
+            min-height: 32px;
+            line-height: 32px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .stat-card .change {
+            font-size: 13px;
+            font-weight: 600;
+            margin-top: 4px;
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+
+        .change.positive {
+            color: #059669;
+            background: #ecfdf5;
+        }
+
+        .change.negative {
+            color: #dc2626;
+            background: #fef2f2;
+        }
+
+        /* Chart area */
+        #chart-container {
+            min-height: 420px;
+        }
+
+        /* Loading state */
+        .loading-overlay {
+            display: none;
+            position: absolute;
+            inset: 0;
+            background: rgba(255,255,255,0.8);
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            z-index: 10;
+        }
+
+        .loading-overlay.visible {
+            display: flex;
+        }
+
+        .spinner {
+            width: 36px;
+            height: 36px;
+            border: 3px solid #e5e7eb;
+            border-top-color: #7c3aed;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .chart-wrapper {
+            position: relative;
+            height: fit-content;
+        }
+
+        .error-msg {
+            color: #dc2626;
+            font-size: 13px;
+            margin-top: 8px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h1>Stock peer analysis</h1>
+    <p>Compare select stocks from Mexico, Sweden, and New Zealand.</p>
+</div>
+
+<div class="main-grid">
+    <div class="sidebar">
+        <div class="card">
+            <div class="card-label">Stock tickers</div>
+            <div class="ticker-container" id="tickerContainer"></div>
+        </div>
+
+        <div class="card" style="margin-top: 20px;">
+            <div class="card-label">Time horizon</div>
+            <div class="time-buttons" id="timeButtons">
+                <button class="time-btn" data-period="1m">1 Month</button>
+                <button class="time-btn" data-period="3m">3 Months</button>
+                <button class="time-btn active" data-period="6m">6 Months</button>
+                <button class="time-btn" data-period="1y">1 Year</button>
+                <button class="time-btn" data-period="5y">5 Years</button>
+                <button class="time-btn" data-period="10y">10 Years</button>
+                <button class="time-btn" data-period="20y">20 Years</button>
+            </div>
+        </div>
+
+        <div class="stats-row">
+            <div class="stat-card" id="bestCard">
+                <div class="label">Best stock</div>
+                <div class="ticker" id="bestTicker">—</div>
+                <span class="change positive" id="bestChange"></span>
+            </div>
+            <div class="stat-card" id="worstCard">
+                <div class="label">Worst stock</div>
+                <div class="ticker" id="worstTicker">—</div>
+                <span class="change negative" id="worstChange"></span>
+            </div>
+        </div>
+
+        <div class="error-msg" id="errorMsg"></div>
+    </div>
+
+    <div class="card chart-wrapper">
+        <div class="loading-overlay" id="loading">
+            <div class="spinner"></div>
+        </div>
+        <div id="chart-container"></div>
+        <div style="display:flex; justify-content:space-between; align-items:center; padding: 12px 16px 4px; border-top: 1px solid #f3f4f6; margin-top: 4px;">
+            <span style="font-size:12px; color:#9ca3af;">Web Developer: Tobi Williams Babatunde</span>
+            <span style="font-size:12px; color:#9ca3af;">Last Updated: <span id="lastUpdated"></span></span>
+        </div>
+    </div>
+</div>
+<script>
+    document.getElementById('lastUpdated').textContent = new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' });
+</script>
+
+<script>
+// Ticker data passed from Flask
+const TICKERS_META = {{ tickers_meta | tojson }};
+
+const PALETTE = ['#6366f1', '#22c55e', '#ef4444', '#06b6d4', '#3b82f6', '#f59e0b', '#f87171'];
+const TICKER_COLORS = {};
+TICKERS_META.forEach((t, i) => { TICKER_COLORS[t.label] = PALETTE[i % PALETTE.length]; });
+
+// activeTickers stores the API symbol (e.g. "VOLVB:SS")
+let activeTickers = new Set(TICKERS_META.map(t => t.symbol));
+let activePeriod = '6m';
+let chart = null;
+
+function labelFor(symbol) {
+    const m = TICKERS_META.find(t => t.symbol === symbol);
+    return m ? m.label : symbol;
+}
+
+function renderChips() {
+    const container = document.getElementById('tickerContainer');
+    container.innerHTML = '';
+    TICKERS_META.forEach(t => {
+        const chip = document.createElement('div');
+        const isActive = activeTickers.has(t.symbol);
+        chip.className = 'ticker-chip' + (isActive ? ' active' : '');
+        if (isActive) {
+            chip.style.background = TICKER_COLORS[t.label];
+        }
+        chip.innerHTML = `${t.label} <span class="remove">${isActive ? '✕' : '+'}</span>`;
+        chip.addEventListener('click', () => {
+            if (activeTickers.has(t.symbol)) {
+                if (activeTickers.size <= 1) return;
+                activeTickers.delete(t.symbol);
+            } else {
+                activeTickers.add(t.symbol);
+            }
+            renderChips();
+            fetchData();
+        });
+        container.appendChild(chip);
+    });
+}
+
+function setupTimeButtons() {
+    document.querySelectorAll('.time-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            document.querySelectorAll('.time-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            activePeriod = btn.dataset.period;
+            fetchData();
+        });
+    });
+}
+
+function buildChart(seriesData) {
+    const entries = Object.entries(seriesData);
+    const series = entries.map(([name, points]) => ({
+        name,
+        data: points.map(p => ({ x: new Date(p.date).getTime(), y: p.value })),
+    }));
+    const colors = entries.map(([name]) => TICKER_COLORS[name] || '#888');
+
+    const options = {
+        chart: {
+            type: 'line',
+            height: 440,
+            fontFamily: 'Inter, sans-serif',
+            toolbar: { show: false },
+            animations: {
+                enabled: true,
+                easing: 'easeinout',
+                speed: 600,
+                dynamicAnimation: { enabled: true, speed: 400 },
+            },
+            zoom: { enabled: true, type: 'x' },
+        },
+        series,
+        colors,
+        stroke: { width: 2.5, curve: 'straight' },
+        xaxis: {
+            type: 'datetime',
+            labels: { style: { colors: '#9ca3af', fontSize: '11px' } },
+            axisBorder: { show: false },
+            axisTicks: { show: false },
+        },
+        yaxis: {
+            labels: {
+                style: { colors: '#9ca3af', fontSize: '11px' },
+                formatter: val => val.toFixed(2),
+            },
+            title: { text: 'Normalized price', style: { color: '#6b7280', fontSize: '12px', fontWeight: 500 } },
+        },
+        grid: {
+            borderColor: '#f3f4f6',
+            strokeDashArray: 4,
+        },
+        tooltip: {
+            shared: true,
+            intersect: false,
+            theme: 'light',
+            x: { format: 'dd MMM yyyy' },
+            y: { formatter: val => val.toFixed(4) },
+        },
+        legend: {
+            position: 'top',
+            horizontalAlign: 'right',
+            fontSize: '12px',
+            fontWeight: 500,
+            markers: { width: 10, height: 10, radius: 3 },
+        },
+    };
+
+    if (chart) {
+        chart.destroy();
+    }
+    chart = new ApexCharts(document.getElementById('chart-container'), options);
+    chart.render();
+}
+
+function updateStats(best, worst) {
+    const bestTicker = document.getElementById('bestTicker');
+    const bestChange = document.getElementById('bestChange');
+    const worstTicker = document.getElementById('worstTicker');
+    const worstChange = document.getElementById('worstChange');
+
+    if (best) {
+        bestTicker.textContent = best.ticker;
+        const arrow = best.change >= 0 ? '↑' : '↓';
+        bestChange.textContent = `${arrow} ${Math.abs(best.change)}%`;
+        bestChange.className = 'change ' + (best.change >= 0 ? 'positive' : 'negative');
+    } else {
+        bestTicker.textContent = '—';
+        bestChange.textContent = '';
+    }
+
+    if (worst) {
+        worstTicker.textContent = worst.ticker;
+        const arrow = worst.change >= 0 ? '↑' : '↓';
+        worstChange.textContent = `${arrow} ${Math.abs(worst.change)}%`;
+        worstChange.className = 'change ' + (worst.change >= 0 ? 'positive' : 'negative');
+    } else {
+        worstTicker.textContent = '—';
+        worstChange.textContent = '';
+    }
+}
+
+async function fetchData() {
+    const loading = document.getElementById('loading');
+    const errorMsg = document.getElementById('errorMsg');
+    loading.classList.add('visible');
+    errorMsg.style.display = 'none';
+
+    const tickers = Array.from(activeTickers).join(',');
+
+    try {
+        const resp = await fetch(`/api/historical?tickers=${encodeURIComponent(tickers)}&period=${activePeriod}`);
+        const data = await resp.json();
+
+        if (data.error) {
+            errorMsg.textContent = 'API error: ' + data.error;
+            errorMsg.style.display = 'block';
+            return;
+        }
+
+        buildChart(data.series);
+        updateStats(data.best, data.worst);
+    } catch (err) {
+        errorMsg.textContent = 'Failed to load data. Please try again.';
+        errorMsg.style.display = 'block';
+    } finally {
+        loading.classList.remove('visible');
+    }
+}
+
+// Init
+renderChips();
+setupTimeButtons();
+fetchData();
+</script>
+
+</body>
+</html>
