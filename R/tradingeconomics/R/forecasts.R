@@ -8,6 +8,7 @@ source("R/functions.R")
 #'@param country string or list.
 #'String to get data for one country. List of strings to get data for
 #'several countries. For example, country = c('United States', 'Australia').
+#'@param ticker string or list.
 #'@param indicator string or list.
 #'String  to get data for one category. List of strings to get data for several calendar events.
 #'For example, category = 'GDP Growth Rate' or
@@ -23,35 +24,43 @@ source("R/functions.R")
 #' @seealso \code{\link{getMarketsData}}, \code{\link{getIndicatorData}}, \code{\link{getHistoricalData}} and \code{\link{getCalendarData}}
 #'@examples
 #'\dontrun{ getForecastData(country = 'United States', indicator = 'Imports')
-#'getForecastData(country = c('United States', 'India'), indicator = c('Imports','Exports'))
+#'getForecastData(country = c('United States', 'china'), indicator = c('gdp','inflation rate'))
+#' getForecastData(country = 'United States')
+#' getForecastData(indicator = 'Imports')
 #'}
 
 
-getForecastData <- function(country = NULL, indicator = NULL, outType = NULL){
-  base <- "https://api.tradingeconomics.com/forecast"
-
+getForecastData <- function(country = NULL, indicator = NULL, outType = NULL, ticker = NULL){
+  base <- "https://api.tradingeconomics.com/forecast/"
   df_final = data.frame()
-  step = 10
 
-  for(i in seq(1, length(country), by = step)){
+  if (length(country) > 1){
+  country = paste(country, collapse = ',')
+  }
+  if (length(indicator) > 1){
+    indicator = paste(indicator, collapse = ',')
+  }
+  if (length(ticker) > 1){
+    ticker = paste(ticker, collapse = ',')
+  }
 
-    init = as.numeric(i)
-    finit = as.numeric(i)+step-1
-
-    if (is.null(country) & is.null(indicator)){
-      stop('At least one of parameters, country or indicator, should be indicated. ')
-    } else if (is.null(country) & !is.null(indicator)){
-      url <- paste(base, 'indicator',
-                   paste(indicator, collapse = ','), sep = '/')
-    } else if (!is.null(country) & is.null(indicator)){
-      url <- paste(base, 'country',
-                   paste(na.omit(country[init:finit]), collapse = ','), sep = '/')
-    } else {
-      url <- paste(base, 'country', paste(na.omit(country[init:finit]), collapse = ','), 'indicator',
-                   paste(indicator, collapse = ','), sep = '/')
-    }
-
-    url <- paste(url, '?c=', apiKey, sep = '')
+  if(!is.null(indicator) & !is.null(country)) {
+    url <- paste('country', country, 'indicator', indicator, sep = '/')
+  } 
+  else if (!is.null(indicator)){
+    url <- paste('indicator', indicator, sep = '/')
+  }
+  else if (!is.null(country)){
+    url <- paste('country', country, sep = '/')
+  } 
+  else if(!is.null(ticker)){
+    url <- paste('ticker', ticker, sep = '/')
+  }
+  else {
+    stop('At least one of parameters, country, ticker or indicator, should be indicated. ')
+  }
+  apikey_local <- .GlobalEnv$apiKey
+    url <- paste(base, url, '?c=', apikey_local, sep = '')
     url <- URLencode(url)
     request <- GET(url)
 
@@ -61,7 +70,6 @@ getForecastData <- function(country = NULL, indicator = NULL, outType = NULL){
 
     df_final = rbind(df_final, webResults)
     Sys.sleep(0.5)
-  }
 
   if (is.null(outType)| identical(outType, 'lst')){
     df_final <- split(df_final , f = df_final$Country)
@@ -73,6 +81,7 @@ getForecastData <- function(country = NULL, indicator = NULL, outType = NULL){
 
   return(df_final)
 }
+
 
 
 

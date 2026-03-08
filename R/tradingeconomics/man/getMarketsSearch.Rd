@@ -4,15 +4,12 @@
 \alias{getMarketsSearch}
 \title{Get latest markets by peers and components from Trading Economics API}
 \usage{
-getMarketsSearch(country = NULL, category = NULL, page = NULL,
-  outType = NULL)
+getMarketsSearch(country = NULL, category = NULL, outType = NULL)
 }
 \arguments{
 \item{country}{string.}
 
 \item{category}{string.}
-
-\item{page}{string}
 
 \item{outType}{string.
 'df' for data frame,
@@ -31,8 +28,9 @@ A country must be provided.
 }
 
 \examples{
-\dontrun{ getMarketsSearch('united states'), getMarketsSearch( 'united states', 'index')
-getMarketsSearch('united states', category = c('index' ,'markets')), getMarketsSearch('japan', ('index', 'markets'), '2')
+\dontrun{ getMarketsSearch('united states'), getMarketsSearch( 'japan', 'index')
+getMarketsSearch('united states', category = c('index' ,'markets'))
+getMarketsSearch('japan', ('index', 'markets'), '2')
 }
 }
 \seealso{

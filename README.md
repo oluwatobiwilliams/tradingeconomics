@@ -1,11 +1,45 @@
-# ABOUT TRADING ECONOMICS 
 
-Trading Economics provides its users with accurate information for 196 countries including historical data for more than 300.000 economic indicators, exchange rates, stock market indexes, government bond yields and commodity prices. Our data is based on official sources, not third party data providers, and our facts are regularly checked for inconsistencies. TradingEconomics.com has received more than 100 million page views from more than 200 countries. Trading Economics is owned by IECONOMICS INC.
+### Introduction
 
-# ABOUT THE API
+The Trading Economics API provides you with direct access to 300.000 economic indicators, exchange rates, stock market indexes, government bond yields and commodity prices. Providing several request methods to query our databases, with samples available in different programming languages, it is the best way to export data in XML, CSV or JSON format. The API can be used to feed a custom developed application, a public website or just off-the-shelf software like Microsoft Excel.
 
-The TE API provides you with direct access to 300.000 economic indicators, exchange rates, stock market indexes, government bond yields and commodity prices. Providing several request methods to query our databases, with samples available in different programming languages, it is the best way to export data in XML, CSV or JSON format. The API can be used to feed a custom developed application, a public website or just off-the-shelf software like Microsoft Excel.
+#
 
-# DOCUMENTATION
+**Documentation**
 
-http://docs.tradingeconomics.com/
+https://docs.tradingeconomics.com/
+
+#
+
+**GitHub Examples**
+
+https://github.com/tradingeconomics/tradingeconomics
+
+#
+
+**Python**
+
+[https://github.com/tradingeconomics/tradingeconomics-python](https://github.com/tradingeconomics/tradingeconomics-python)
+
+#
+
+**Jupyter Notebooks**
+
+https://github.com/tradingeconomics/notebooks
+
+#
+
+**Docker**
+
+https://hub.docker.com/u/tradingeconomics
+
+#
+
+**Learn More**
+
+https://tradingeconomics.com/api/
+
+
+
+
+

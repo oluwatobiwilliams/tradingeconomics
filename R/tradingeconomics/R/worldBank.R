@@ -5,7 +5,7 @@ source("R/functions.R")
 #'@export getWorldBankCategories
 #'
 #' @param category string.
-#' @param page string.
+
 #' @param outType string.
 #''df' for data frame,
 #''raw'(default) for list of unparsed data.
@@ -17,28 +17,23 @@ source("R/functions.R")
 #'@examples
 #'\dontrun{ getWorldBankCategories(outType = 'df')
 #'getWorldBankCategories(category = 'education')
-#'getWorldBankCategories(category = 'education', page = '2')
+#'getWorldBankCategories(category = 'education')
 #'}
 
 
-getWorldBankCategories <- function( category = NULL, outType = NULL, page = NULL){
+getWorldBankCategories <- function( category = NULL, outType = NULL){
 
   base <- "https://api.tradingeconomics.com/worldBank"
   url <- paste(base)
   df_final = data.frame()
-
+  apikey_local <- .GlobalEnv$apiKey
   if(!is.null(category)){
     url<- paste(base, 'category', paste(category, collapse = ','), sep = '/')
   }else{
     url <- paste(base, 'categories', sep = '/')
   }
-  if(!is.null(category) & !is.null(page)){
-    url <- paste(base, 'category', paste(category, collapse = ','), sep = '/')
-    url <- paste(url, paste(page, collapse = ','), sep = '/')
 
-  }
-
-  url <- paste(url,  '?c=', apiKey, sep ='')
+  url <- paste(url,  '?c=', apikey_local, sep ='')
 
   url <- URLencode(url)
   request <- GET(url)
@@ -67,12 +62,12 @@ getWorldBankCategories <- function( category = NULL, outType = NULL, page = NULL
 #'Get World Bank values from Trading Economics API
 #'@export getWorldBankIndicators
 #'
-#' @param indicator string.
-#' @param country string.
-#' @param page_number string.
-#' @param series_code string.
-#' @param url string.
-#' @param outType string.
+#' 
+#'@param category string.
+#'@param identifier string.
+#'@param URL string.
+#'@param series_code string.
+#'@param outType string.
 #''df' for data frame,
 #''raw'(default) for list of unparsed data.
 #'
@@ -82,14 +77,14 @@ getWorldBankCategories <- function( category = NULL, outType = NULL, page = NULL
 #'indicator and country by using series_code or url.
 #'@seealso \code{\link{getCalendarData}}, \code{\link{getForecastData}}, \code{\link{getHistoricalData}} and \code{\link{getIndicatorData}}
 #'@examples
-#'\dontrun{ getWorldBankIndicators(series_code = 'fr.inr.rinr')
-#'getWorldBankIndicators(identifier = 'portugal',category = 'country', page_number = '2')
+#'\dontrun{ getWorldBankIndicators(series_code = 'fr.inr.rinr', outType = 'df')
+#'getWorldBankIndicators(identifier = 'portugal',category = 'country', outType = 'df')
 #'getWorldBankIndicators(series_code = 'usa.fr.inr.rinr')
 #'getWorldBankIndicators(URL = '/united-states/real-interest-rate-percent-wb-data.html')
 #'}
 
 
-getWorldBankIndicators <- function(category = NULL, identifier = NULL, series_code = NULL, page_number = NULL, URL = NULL, outType = NULL){
+getWorldBankIndicators <- function(category = NULL, identifier = NULL, series_code = NULL,  URL = NULL, outType = NULL){
   base <- "https://api.tradingeconomics.com/worldBank"
   url <- paste(base)
   df_final = data.frame()
@@ -105,22 +100,18 @@ getWorldBankIndicators <- function(category = NULL, identifier = NULL, series_co
       return("Category not recognized. It can be null, country or symbol.")
     }
   }
-  if(!is.null(page_number)){
-    url <- paste(base,"country", paste(identifier, collapse = ','), sep = '/')
-    url <- paste(url, paste(page_number, collapse = ','), sep = '/')
-  }
-
-  url <- paste(url,  '?c=', apiKey, sep ='')
+  apikey_local <- .GlobalEnv$apiKey
+  url <- paste(url,  '?c=', apikey_local, sep ='')
 
   if(!is.null(series_code)){
     url <- paste(base,"indicator", paste(identifier, collapse = ','), sep = '/')
-    url <- paste(url,  '?c=', apiKey, sep ='')
+    url <- paste(url,  '?c=', apikey_local, sep ='')
     url <- paste(url, paste(series_code, collapse = ','), sep = '&s=')
   }
 
   if(!is.null(URL)){
     url <- paste(base,"indicator", collapse = NULL, sep = '/')
-    url <- paste(url,  '?c=', apiKey, sep ='')
+    url <- paste(url,  '?c=', apikey_local, sep ='')
     url <- paste(url, paste(URL, collapse = ','), sep = '&url=')
     print(url)
   }
@@ -171,7 +162,8 @@ getWorldBankIndicators <- function(category = NULL, identifier = NULL, series_co
 
 getWorldBankHistorical <- function(series_code = NULL, outType = NULL){
   base <- "https://api.tradingeconomics.com/worldBank/historical"
-  url <- paste(base, '?c=', apiKey, sep = '')
+  apikey_local <- .GlobalEnv$apiKey
+  url <- paste(base, '?c=', apikey_local, sep = '')
   df_final = data.frame()
 
   if(!is.null(series_code)){
@@ -200,3 +192,4 @@ getWorldBankHistorical <- function(series_code = NULL, outType = NULL){
 
   return(df_final)
 }
+

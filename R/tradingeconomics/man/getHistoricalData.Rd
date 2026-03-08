@@ -4,8 +4,14 @@
 \alias{getHistoricalData}
 \title{Return historical information from Trading Economics API.}
 \usage{
-getHistoricalData(country, indicator, initDate = NULL, endDate = NULL,
-  outType = NULL)
+getHistoricalData(
+  country = NULL,
+  indicator = NULL,
+  ticker = NULL,
+  initDate = NULL,
+  endDate = NULL,
+  outType = NULL
+)
 }
 \arguments{
 \item{country}{string or list.
@@ -16,6 +22,9 @@ several countries. For example, country = c('United States', 'Australia').}
 String  to get data for one category. List of strings to get data for several calendar events.
 For example, category = 'GDP Growth Rate' or
 category = c('Exports', 'Imports').}
+
+\item{ticker}{string.
+String Unique ticker used by Trading Economics}
 
 \item{initDate}{string with format: YYYY-MM-DD.
 For example: '2011-01-01'.}
@@ -38,11 +47,15 @@ Without credentials only sample data will be provided.
 }
 
 \examples{
-\dontrun{ getHistoricalData(country = 'United States', indicator = 'Imports',
+\dontrun{ getHistoricalData(country = 'United Kingdom', indicator = 'Imports',
 initDate = '2011-01-01', endDate = '2016-01-01')
 getHistoricalData(country = c('United States', 'United Kingdom'),
-indicator = c('Imports','Exports'),
-initDate = '2011-01-01', endDate = '2016-01-01')
+indicator = c('Imports','Exports'),initDate = '2011-01-01', endDate = '2016-01-01')
+getHistoricalData(ticker = 'USURTOT', initDate = '2015-03-01')
+getHistoricalData(country = c('United States', 'United Kingdom'),
+indicator = c('Imports','Exports'))
+getHistoricalData(country = 'United States', indicator = 'Imports')
+
 }
 }
 \seealso{

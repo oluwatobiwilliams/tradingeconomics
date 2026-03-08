@@ -4,25 +4,34 @@
 \alias{getLatestNews}
 \title{Return latest news information from Trading Economics API}
 \usage{
-getLatestNews(identifier = NULL, category = NULL, limit = NULL,
-  start = NULL, outType = NULL)
+getLatestNews(
+  country = NULL,
+  indicator = NULL,
+  limit = NULL,
+  start = NULL,
+  initDate = NULL,
+  endDate = NULL,
+  outType = NULL
+)
 }
 \arguments{
+\item{country}{string.}
+
+\item{indicator}{stirng.}
+
 \item{limit, }{string.
 Limits the list size.}
 
 \item{start, }{string.
 Specific starting index.}
 
+\item{initDate}{string with format: YYYY-MM-DD.
+For example: '2011-01-01'.}
+
+\item{endDate}{string with format: YYYY-MM-DD.}
+
 \item{outType}{string.
 'lst'(default) for lis format output, 'df' for data frame,}
-
-\item{country}{string or list.
-String for one country information. List of strings for
-several countrys, for example country = c('country_name', 'country_name').}
-
-\item{indicator, }{string.
-String for one indicator, or list of strings for several indicators.}
 }
 \value{
 Return a list or data frame of the latest news, by country or countries, by indicator and with page limit and start index number.
@@ -37,12 +46,15 @@ Without credentials default information will be provided.
 }
 
 \examples{
-\dontrun{getLatestNews( )
-getLatestNews('United States')
-getLatestNews(c('United States', 'Portugal'))
-getLatestNews( identifier = 'inflation rate', category = 'indicator')
-getLatestNews( c('United States', 'Portugal'), 'inflation rate')
-getLatestNews(limit = '15', start = '10')
+\dontrun{getLatestNews(outType = 'df')
+getLatestNews(initDate = '2021-02-02', endDate = '2021-03-03', outType = 'df')
+getLatestNews(country = c('united states','china') ,outType = 'df')
+getLatestNews(country = 'united states', initDate = '2021-02-02', endDate = '2021-03-03' ,outType = 'df')
+getLatestNews(indicator = 'inflation rate' ,outType = 'df')
+getLatestNews(indicator = 'inflation rate' , initDate = '2021-02-02', endDate = '2021-03-03' ,outType = 'df')
+getLatestNews(country = 'united states' ,indicator = 'inflation rate' ,outType = 'df')
+getLatestNews(country = 'united states' ,indicator = 'inflation rate', initDate = '2021-02-02', endDate = '2021-03-03', outType = 'df')
+getLatestNews(limit='2',start = '1', outType = 'df')
 }
 
 }

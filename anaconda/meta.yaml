@@ -1,0 +1,38 @@
+{% set name = "tradingeconomics" %}
+{% set version = "4.2.8" %} 
+
+package:
+  name: "{{ name|lower }}"
+  version: "{{ version }}"
+
+source:
+  url: "https://files.pythonhosted.org/packages/ee/fa/f77a8e0ea7e7a1bab2f423268f8689ee793c1537f5aa18320cd22a3a7189/tradingeconomics-4.2.8.tar.gz"
+  sha256: df573a1e99b0f4e620dafd94cb8f861a809fde8a74384f7e2e6390b89b486edd
+
+build:
+  number: 0
+  script: "{{ PYTHON }} -m pip install . -vv"
+
+requirements:
+  host:
+    - pandas
+    - pip
+    - python
+    - websocket-client
+  run:
+    - pandas
+    - python
+    - websocket-client
+
+test:
+  imports:
+    - tradingeconomics
+
+about:
+  home: "https://tradingeconomics.com/"
+  license: MIT
+  license_family: MIT
+  license_file: 
+  summary: "Library to download data from Trading Economics API"
+  doc_url: "https://docs.tradingeconomics.com/?python"
+

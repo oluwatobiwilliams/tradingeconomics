@@ -4,8 +4,12 @@
 \alias{getHistoricalMarkets}
 \title{Return historical information from Trading Economics API.}
 \usage{
-getHistoricalMarkets(symbol = NULL, initDate = NULL, endDate = NULL,
-  outType = NULL)
+getHistoricalMarkets(
+  symbol = NULL,
+  initDate = NULL,
+  endDate = NULL,
+  outType = NULL
+)
 }
 \arguments{
 \item{symbol}{string or list.
@@ -33,7 +37,8 @@ A symbol must be provided.
 }
 
 \examples{
-\dontrun{ getHistoricalMarkets(c('AAPL:US','INDU:IND'),initDate = '2011-01-01', endDate = '2016-01-01', outType = 'df')
+\dontrun{ getHistoricalMarkets(c('AAPL:US','INDU:IND'),
+initDate = '2011-01-01', endDate = '2016-01-01', outType = 'df')
 getHistoricalMarkets('aapl:us', initDate =  '2019-02-20' )
 getHistoricalMarkets('AAPL:US', initDate = '2011-01-01', endDate = '2016-01-01')
 

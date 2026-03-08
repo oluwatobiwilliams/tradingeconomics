@@ -4,24 +4,30 @@
 \alias{getEarnings}
 \title{Return earnings information from Trading Economics API}
 \usage{
-getEarnings(indicator = NULL, initDate = NULL, endDate = NULL,
-  type = NULL, category = NULL, outType = NULL)
+getEarnings(
+  indicator = NULL,
+  initDate = NULL,
+  endDate = NULL,
+  type = NULL,
+  category = NULL,
+  outType = NULL
+)
 }
 \arguments{
+\item{indicator}{string.
+string for symbol}
+
 \item{initDate, }{string.}
 
 \item{endDate, }{string.}
 
 \item{type, }{string.Could be earnings, ipo, or dividends.}
 
+\item{category}{string or list.
+string for market symbol}
+
 \item{outType}{string.
 'lst'(default) for lis format output, 'df' for data frame,}
-
-\item{country}{string or list.
-Filter earnings calendar by country.}
-
-\item{symbol}{string or list.
-String for symbol information.}
 }
 \value{
 Returns a list or data frame of information for specific country, or for specific symbol by initial and end dates.
@@ -41,7 +47,7 @@ getEarnings('united states', outType = 'df' )
 getEarnings(initDate = '2017-01-01', outType = 'df')
 getEarnings(indicator='msft:us', category="symbol" , '2017-01-01' )
 getEarnings(indicator='msft:us', category="symbol", '2016-01-01','2017-01-01', outType = 'df')
-getEarnings(type ='dividends')
+getEarnings(type ='dividends', outType = 'df')
 }
 
 }

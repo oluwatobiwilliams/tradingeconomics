@@ -4,14 +4,18 @@
 \alias{getLatestUpdates}
 \title{Return the latest updates}
 \usage{
-getLatestUpdates(initDate = NULL, outType = NULL)
+getLatestUpdates(initDate = NULL, outType = NULL, country = NULL, time = NULL)
 }
 \arguments{
+\item{initDate}{string
+String for historical data lastupdate, or for historical data per date.}
+
 \item{outType}{string.
 'lst'(default) for lis format output, 'df' for data frame,}
 
-\item{date}{string or list.
-String for historical data lastupdate, or for historical data per date.}
+\item{country}{string.}
+
+\item{time}{string.}
 }
 \value{
 Return a list or data frame of historical information by lastupdate or by specific date.
@@ -26,7 +30,9 @@ Historical data Symbol lastupdates.
 
 \examples{
 \dontrun{getLatestUpdates()
-getLatestUpdates('2018-02-22')
+getLatestUpdates(initDate = '2018-02-22')
+getLatestUpdates(country = 'united states')
+getLatestUpdates(initDate = '2021-10-22', time = '15:20')  
 }
 
 }

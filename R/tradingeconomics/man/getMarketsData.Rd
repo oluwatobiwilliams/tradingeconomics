@@ -4,11 +4,23 @@
 \alias{getMarketsData}
 \title{Get markets values from Trading Economics API}
 \usage{
-getMarketsData(marketsField, outType = NULL)
+getMarketsData(
+  marketsField = NULL,
+  country = NULL,
+  symbol = NULL,
+  cross = NULL,
+  outType = NULL
+)
 }
 \arguments{
 \item{marketsField}{string. Takes either one of 'commodity','currency',
 'index' or 'bond' as options.}
+
+\item{country}{string.}
+
+\item{symbol}{string.}
+
+\item{cross}{string.}
 
 \item{outType}{string.
 'df' for data frame,
@@ -26,7 +38,7 @@ Without credentials only sample information will be provided.
 }
 
 \examples{
-\dontrun{ getMarketsData(marketsField = 'index')
+\dontrun{ getMarketsData(marketsField = 'currency')
 }
 }
 \seealso{

@@ -4,8 +4,16 @@
 \alias{getCalendarData}
 \title{Return calendar events from Trading Economics API}
 \usage{
-getCalendarData(country = NULL, indicator = NULL, initDate = NULL,
-  endDate = NULL, outType = NULL)
+getCalendarData(
+  country = NULL,
+  indicator = NULL,
+  id = NULL,
+  ticker = NULL,
+  initDate = NULL,
+  endDate = NULL,
+  importance = NULL,
+  outType = NULL
+)
 }
 \arguments{
 \item{country}{string or list.
@@ -17,10 +25,16 @@ String  to get data for one category. List of strings to get data for several ca
 For example, category = 'GDP Growth Rate' or
 category = c('Exports', 'Imports').}
 
+\item{id}{string with calendar id}
+
+\item{ticker}{string with ticker}
+
 \item{initDate}{string with format: YYYY-MM-DD.
 For example: '2011-01-01'.}
 
 \item{endDate}{string with format: YYYY-MM-DD.}
+
+\item{importance}{string with importance}
 
 \item{outType}{string.
 'df' for data frame,
@@ -39,14 +53,21 @@ Without credentials, only sample data is returned.
 }
 
 \examples{
-\dontrun{ getCalendarData(country = 'United States', indicator = 'Composite Pmi',
- initDate = '2011-01-01', endDate = '2016-01-01')
-getCalendarData(country = c('United States', 'India'),
- indicator = c('Composite Pmi', 'Bankruptcies'),
-  initDate = '2011-01-01', endDate = '2016-01-01')
-  }
+\dontrun{getCalendarData()
+getCalendarData(id= c('174108','160025','160030'), outType = 'df')
+getCalendarData(ticker= c('IJCUSA','SPAINFACORD','BAHRAININFNRATE'))
+getCalendarData(country = 'spain', indicator = 'Bankruptcies',initDate = '2016-12-01',
+endDate = '2017-02-25')
+getCalendarData(country = c('portugal', 'India'),indicator = c('Composite Pmi', 'Bankruptcies'),
+initDate = '2011-01-01', endDate = '2016-01-01')
+getCalendarData(ticker= c('IJCUSA','SPAINFACORD','BAHRAININFNRATE'), initDate = '2018-01-01',
+endDate = '2018-03-01')
+getCalendarData(country = 'United States', indicator = 'initial jobless claims')
+getCalendarData(country = 'United States')
+getCalendarData(indicator = 'initial jobless claims')
+}
 
 }
 \seealso{
-\code{\link{getMarketsData}}, \code{\link{getForecastData}}, \code{\link{getHistoricalData}} and \code{\link{getIndicatorData}}
+\code{\link{getMarketsData}}, \code{\link{getCalendarUpdates}}, \code{\link{getHistoricalData}} and \code{\link{getIndicatorData}}
 }

@@ -4,7 +4,13 @@
 \alias{getIndicatorData}
 \title{Return indicators information from Trading Economics API}
 \usage{
-getIndicatorData(country = NULL, indicator = NULL, outType = NULL)
+getIndicatorData(
+  country = NULL,
+  indicator = NULL,
+  outType = NULL,
+  ticker = NULL,
+  group = NULL
+)
 }
 \arguments{
 \item{country}{string or list.
@@ -18,6 +24,13 @@ indicators = c('indicator_name', 'indicator_name').}
 
 \item{outType}{string.
 'lst'(default) for lis format output, 'df' for data frame,}
+
+\item{ticker}{string or list.
+String for one ticker information. List of strings for
+several tickers, for example ticker = c('ticker_name', 'ticker_name').}
+
+\item{group}{string or list.
+String for one group.}
 }
 \value{
 Return a list or dictionary of all indicators, indicators by country or country-indicator pair.
@@ -32,8 +45,9 @@ Without credentials default information will be provided.
 }
 
 \examples{
-\dontrun{ getIndicatorData(country = 'United States', indicators = 'Imports', output_type = 'df')
-getIndicatorData(country = c('United States', 'Portugal'), indicators = c('Imports','Exports'))
+\dontrun{ getIndicatorData(country = 'United States', indicator = 'Imports', outType = 'df')
+getIndicatorData(country = c('United States', 'china'), indicator = c('gdp','inflation rate'))
+getIndicatorData(country = 'United States', outType = 'df')
 }
 }
 \seealso{

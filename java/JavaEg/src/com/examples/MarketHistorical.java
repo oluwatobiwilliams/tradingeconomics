@@ -1,10 +1,10 @@
 package com.examples;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
+        import java.io.BufferedReader;
+        import java.io.IOException;
+        import java.io.InputStreamReader;
+        import java.net.HttpURLConnection;
+        import java.net.URL;
 
 public class MarketHistorical
 {
@@ -61,7 +61,7 @@ public class MarketHistorical
     public static void getHistoricalMultiSymbol() throws IOException {
 
         //put symbols here
-        String params = "aapl:us,indu:ind";
+        String params = "aapl:us,gac:com";
         params = params.replaceAll("\\s","%20");
         //set the path for the query
         String path = "/markets/historical" + "/" + params;
