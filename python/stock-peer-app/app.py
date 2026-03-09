@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 from flask import Flask, render_template, jsonify, request
 from dotenv import load_dotenv
 import requests
+import yfinance as yf
 
 load_dotenv()
 
@@ -20,6 +21,17 @@ DEFAULT_TICKERS = [
     "GFNORTEO:MM",  # Banorte (Mexico)
     "FPH:NZ",       # Fisher & Paykel Healthcare (NZ)
 ]
+
+# Mapping from Trading Economics ticker format to Yahoo Finance ticker format
+TE_TO_YAHOO = {
+    "VOLVB:SS":    "VOLV-B.ST",
+    "ERICB:SS":    "ERIC-B.ST",
+    "HMB:SS":      "HM-B.ST",
+    "SAND:SS":     "SAND.ST",
+    "GMEXICOB:MM": "GMEXICOB.MX",
+    "GFNORTEO:MM": "GFNORTEO.MX",
+    "FPH:NZ":      "FPH.NZ",
+}
 
 TICKER_LABELS = {
     "VOLVB:SS": "VOLVO",
@@ -42,7 +54,7 @@ PERIOD_DAYS = {
 }
 
 
-def fetch_historical(symbols, period):
+def fetch_historical_te(symbols, period):
     days = PERIOD_DAYS.get(period, 180)
     end_date = datetime.now()
     start_date = end_date - timedelta(days=days)
@@ -57,6 +69,57 @@ def fetch_historical(symbols, period):
     resp = requests.get(url, params=params, timeout=30)
     resp.raise_for_status()
     return resp.json()
+
+
+def fetch_historical_yahoo(symbols, period):
+    """Fetch historical data from Yahoo Finance and return it in the same
+    shape as the Trading Economics response so normalize_data can reuse it."""
+    days = PERIOD_DAYS.get(period, 180)
+    end_date = datetime.now()
+    start_date = end_date - timedelta(days=days)
+
+    yahoo_symbols = [TE_TO_YAHOO.get(s, s) for s in symbols]
+    te_by_yahoo = {TE_TO_YAHOO.get(s, s): s for s in symbols}
+
+    data = yf.download(
+        yahoo_symbols,
+        start=start_date.strftime("%Y-%m-%d"),
+        end=end_date.strftime("%Y-%m-%d"),
+        auto_adjust=True,
+        progress=False,
+        group_by="ticker",
+    )
+
+    rows = []
+    for yahoo_sym in yahoo_symbols:
+        te_sym = te_by_yahoo.get(yahoo_sym, yahoo_sym)
+        try:
+            if len(yahoo_symbols) == 1:
+                closes = data["Close"]
+            else:
+                closes = data[yahoo_sym]["Close"]
+
+            for date, close in closes.dropna().items():
+                rows.append({
+                    "Symbol": te_sym,
+                    "Date": date.strftime("%d/%m/%Y"),
+                    "Close": float(close),
+                })
+        except (KeyError, TypeError):
+            continue
+
+    return rows
+
+
+def fetch_historical(symbols, period):
+    """Try Trading Economics first; fall back to Yahoo Finance on any error."""
+    if API_KEY:
+        try:
+            return fetch_historical_te(symbols, period)
+        except requests.RequestException as e:
+            print(f"Trading Economics API failed ({e}), falling back to Yahoo Finance")
+
+    return fetch_historical_yahoo(symbols, period)
 
 
 def normalize_data(raw_data, symbols):
@@ -153,4 +216,4 @@ def api_historical():
 
 
 if __name__ == "__main__":
-    app.run(debug=True, port=5000)
+    app.run(debug=True, port=5001)
